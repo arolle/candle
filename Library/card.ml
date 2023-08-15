@@ -358,7 +358,7 @@ let FINITE_CARD_LT = prove
 
 let CARD_LE_SUBSET = prove
  (`!s:A->bool t. s SUBSET t ==> s <=_c t`,
-  REWRITE_TAC[SUBSET; le_c] THEN METIS_TAC[I_THM]);;
+  REWRITE_TAC[SUBSET; le_c] THEN MESON_TAC[I_THM]);;
 
 let CARD_LE_UNIV = prove
  (`!s:A->bool. s <=_c (:A)`,
@@ -1960,7 +1960,7 @@ let COUNTABLE_IMAGE_EQ_INJ = prove
   MP_TAC(ISPECL [`f:A->B`; `IMAGE (f:A->B) s`; `s:A->bool`]
         SUBSET_IMAGE_INJ) THEN
   REWRITE_TAC[SUBSET_REFL] THEN MATCH_MP_TAC MONO_EXISTS THEN
-  ASM_METIS_TAC[COUNTABLE_IMAGE_INJ_EQ]);;
+  ASM_MESON_TAC[COUNTABLE_IMAGE_INJ_EQ]);;
 
 let COUNTABLE_FLD = prove
  (`!l:A->A->bool. COUNTABLE(fld l) <=> COUNTABLE {(x,y) | l x y}`,

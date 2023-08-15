@@ -572,7 +572,7 @@ let QOSET_MIN,QOSET_MAX = (CONJ_PAIR o prove)
   ASM_CASES_TAC `s:A->bool = {}` THEN
   ASM_REWRITE_TAC[NOT_IN_EMPTY; strictly; TAUT `~(p /\ ~p)`] THEN
   RULE_ASSUM_TAC(REWRITE_RULE[qoset; SUBSET; fld; IN_ELIM_THM]) THEN
-  ASM METIS_TAC[]);;
+  ASM_MESON_TAC []);;
 
 let POSET_MIN,POSET_MAX = (CONJ_PAIR o prove)
  (`(!l s:A->bool.

@@ -2282,6 +2282,7 @@ let rec powermod x m n =
 (* Make a call to PARI/GP to factor a number into (probable) primes.         *)
 (* ------------------------------------------------------------------------- *)
 
+(*
 let factor =
   let suck_file s = let data = string_of_file s in Sys.remove s; data in
   let extract_output s =
@@ -2560,4 +2561,4 @@ time PROVE_PRIMEFACT (Int 151);;
 (* ------------------------------------------------------------------------- *)
 
 map (time PRIME_TEST o mk_small_numeral)
-  [3; 5; 7; 13; 23; 43; 83; 163; 317; 631; 1259; 2503; 4001];;
+  [3; 5; 7; 13; 23; 43; 83; 163; 317; 631; 1259; 2503; 4001];; *)

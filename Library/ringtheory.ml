@@ -4550,7 +4550,7 @@ let RING_POLY_UNIVERSAL_CONV =
     SEMIRING_NORMALIZERS_CONV pth sth
      (is_ringconst,
       RING_INT_ADD_CONV,RING_INT_MUL_CONV,RING_INT_POW_CONV)
-     (<) in
+      (fun x -> fun y -> Term.compare x y = Less) in
   GEN_REWRITE_CONV ONCE_DEPTH_CONV [ith; GSYM RING_OF_INT_OF_NUM] THENC
   RING_POLY_CONV;;
 
@@ -9125,7 +9125,16 @@ let [RING_LOCALIZATION; RING_LOCALIZATION_NEG; RING_LOCALIZATION_ADD],
     ONCE_REWRITE_TAC[MESON[]
      `(!x y. P x y ==> g (r x) (r y) = r (f x y)) <=>
       (!w z x y. P x y /\ r x = w /\ r y = z ==> g w z = r (f x y))`] THEN
-    REWRITE_TAC[GSYM SKOLEM_THM] THEN ASM_METIS_TAC[]) in
+    REWRITE_TAC[GSYM SKOLEM_THM]
+    THEN REPEAT STRIP_TAC
+    THEN
+    EXISTS_TAC `(r:A->B) (f (FST (@xy:(A #A). P (FST xy) (SND xy) /\ r (FST xy) = w /\ r (SND xy) = z)) (SND (@xy. P (FST xy) (SND xy) /\ r (FST xy) = w /\ r (SND xy) = z)))`
+    THEN REPEAT STRIP_TAC
+    THEN (FIRST_X_ASSUM MATCH_MP_TAC)
+    THEN ASM_SIMP_TAC[]
+    THEN (CONV_TAC SELECT_CONV)
+    THEN EXISTS_TAC`(x:A,y:A)`
+    THEN ASM_SIMP_TAC[]) in
   let localization_neg_exists = prove
    (`!r s:A->bool.
           ring_multsys r s
@@ -14113,6 +14122,7 @@ let RING_INV_INTEGER_MOD_RING = prove
     REWRITE_TAC[INVERSE_MOD_BOUND; INVERSE_MOD_RMUL_EQ] THEN
     ONCE_REWRITE_TAC[COPRIME_SYM] THEN ASM_REWRITE_TAC[] THEN ASM_ARITH_TAC]);;
 
+(*
 let INTEGER_MOD_RING_RED_CONV =
   let [pth_0; pth_1; pth_num; pth_neg; pth_add; pth_sub; pth_mul; pth_pow] =
       (CONJUNCTS o prove)
@@ -14164,6 +14174,7 @@ let INTEGER_MOD_RING_RED_CONV =
     let th = baseconv tm in
     if is_intconst(rand(concl th)) then th
     else failwith "INTEGER_MOD_RING_RED_CONV";;
+*)
 
 (* ------------------------------------------------------------------------- *)
 (* The ring (and field) of real numbers.                                     *)
@@ -17043,7 +17054,7 @@ let MONOMIAL_LE_ANTISYM = prove
     ASM_REWRITE_TAC[MONOMIAL_VARS_MUL; FINITE_UNION] THEN
     REWRITE_TAC[SUBSET; IN_ELIM_THM; monomial_vars; IN_UNION] THEN ARITH_TAC;
     REWRITE_TAC[fld; IN_ELIM_THM] THEN ASM_MESON_TAC[];
-    REWRITE_TAC[properly] THEN ASM_METIS_TAC[LT_ANTISYM]]));;
+    REWRITE_TAC[properly] THEN GEN_MESON_TAC 1 100000 1 [LT_ANTISYM]]));;
 
 let MONOMIAL_LET_ANTISYM = prove
  (`!(<<=) m1 m2.
@@ -17182,11 +17193,15 @@ let MONOMIAL_LT_TOSET = prove
       ASM_REWRITE_TAC[IN_UNIV] THEN
       REPEAT STRIP_TAC THENL [ALL_TAC; ASM_MESON_TAC[LT_ANTISYM]] THEN
       MATCH_MP_TAC(ARITH_RULE `~(a:num = b) /\ ~(a < b) ==> b < a`) THEN
-      ASM_METIS_TAC[LT_ANTISYM; LT_TRANS]];
+      ASM_REWRITE_TAC[] THEN
+      DISCH_THEN (fun thm -> ASSUME_TAC thm THEN MP_TAC thm) THEN
+      REWRITE_TAC[GSYM NOT_DEF] THEN
+      FIRST_X_ASSUM (MATCH_MP_TAC o CONV_RULE (ONCE_DEPTH_CONV CONTRAPOS_CONV)) THEN
+      ASM_MESON_TAC[LT_TRANS;LT_ANTISYM;LT_REFL] ];
     DISCH_THEN(X_CHOOSE_THEN `j:V` STRIP_ASSUME_TAC) THEN
     X_GEN_TAC `i:V` THEN DISCH_TAC THEN EXISTS_TAC `j:V` THEN
     FIRST_X_ASSUM(MP_TAC o GEN_REWRITE_RULE I [toset]) THEN
-    ASM_REWRITE_TAC[IN_UNIV] THEN ASM_METIS_TAC[LT_ANTISYM; LT_TRANS]]);;
+    ASM_REWRITE_TAC[IN_UNIV] THEN ASM_MESON_TAC[LT_ANTISYM; LT_TRANS]]);;
 
 let MONOMIAL_LE_TOSET = prove
  (`!(<<=) m1 m2.
